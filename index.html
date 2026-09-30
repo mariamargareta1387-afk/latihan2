@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER DETECTIVE — Misi Membongkar Pesan Mencurigakan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            dark: '#0a0f1d',
+                            card: '#111827',
+                            border: '#1f293d',
+                            primary: '#00f0ff',
+                            secondary: '#7000ff',
+                            accent: '#3b82f6',
+                            warning: '#f59e0b',
+                            danger: '#ef4444',
+                            success: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Custom scrollbar and smooth transitions */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+        }
+        .glow-secondary {
+            box-shadow: 0 0 20px rgba(112, 0, 255, 0.25);
+        }
+        .pulse-subtle {
+            animation: pulse-border 2s infinite ease-in-out;
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(0, 240, 255, 0.4); }
+            50% { border-color: rgba(0, 240, 255, 0.9); }
+        }
+        .highlight-part {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .highlight-part.active {
+            background-color: rgba(0, 240, 255, 0.2);
+            outline: 2px dashed #00f0ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased bg-slate-950 text-slate-100 flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToScreen('home')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <svg class="w-6 h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 leading-none">
+                        CYBER DETECTIVE
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">SMP Kelas IX Informatika</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center gap-2">
+                <button id="btn-guide-header" onclick="openGuideModal()" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Petunjuk</span>
+                </button>
+                
+                <div id="header-detective-badge" class="hidden items-center gap-2 pl-3 border-l border-slate-800">
+                    <div id="header-avatar" class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center border border-cyan-500/50 text-xs font-bold text-cyan-400">
+                        ?
+                    </div>
+                    <span id="header-detective-name" class="text-xs font-semibold text-slate-300 hidden sm:inline">Detektif</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- ==================== 1. HOME SCREEN ==================== -->
+        <section id="screen-home" class="screen-view py-6 flex flex-col items-center text-center">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-400 text-xs font-semibold mb-6">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                Simulasi Pembelajaran Interaktif
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-2xl leading-tight mb-4">
+                CYBER DETECTIVE
+            </h1>
+            <p class="text-lg sm:text-xl text-cyan-400 font-medium mb-3 max-w-xl">
+                "Misi Membongkar Pesan Mencurigakan"
+            </p>
+            <p class="text-sm sm:text-base text-slate-400 max-w-md mb-8">
+                Jadilah Detektif Siber. Periksa sebelum percaya. Melatih ketelitian membaca pesan digital di era modern.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-lg mb-10 text-left">
+                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                    <div class="text-cyan-400 text-lg mb-1">🔍</div>
+                    <h3 class="font-bold text-sm text-slate-200">Bedah Pesan</h3>
+                    <p class="text-xs text-slate-400 mt-1">Periksa alamat, tautan, dan gaya bahasa.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                    <div class="text-indigo-400 text-lg mb-1">🛡️</div>
+                    <h3 class="font-bold text-sm text-slate-200">Verifikasi</h3>
+                    <p class="text-xs text-slate-400 mt-1">Gunakan alat deteksi sebelum mengambil tindakan.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                    <div class="text-emerald-400 text-lg mb-1">💡</div>
+                    <h3 class="font-bold text-sm text-slate-200">Edukasi</h3>
+                    <p class="text-xs text-slate-400 mt-1">Belajar dari pembahasan nyata tanpa tekanan skor.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md">
+                <button onclick="goToScreen('character')" class="w-full sm:w-auto flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/25 transition transform active:scale-95 flex items-center justify-center gap-2">
+                    <span>MULAI INVESTIGASI</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+                <button id="btn-resume-home" onclick="resumeProgress()" class="hidden w-full sm:w-auto flex-1 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-sm transition flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>LANJUTKAN</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== 2. SELECT CHARACTER SCREEN ==================== -->
+        <section id="screen-character" class="screen-view hidden py-4">
+            <div class="text-center max-w-xl mx-auto mb-8">
+                <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Langkah 1 dari 3</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">SIAPA DETEKTIF SIBER HARI INI?</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-2">Pilih karakter yang akan menemanimu dalam misi analisis pesan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto mb-8">
+                <!-- RAKA -->
+                <div onclick="selectCharacter('raka')" id="card-char-raka" class="char-card cursor-pointer p-5 rounded-2xl bg-slate-900 border-2 border-slate-800 hover:border-cyan-500/50 transition duration-200 flex flex-col items-center text-center group">
+                    <div class="w-20 h-20 rounded-2xl bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+                        <svg class="w-12 h-12 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-cyan-400">RAKA</h3>
+                    <p class="text-xs text-amber-400 font-medium mb-2">Berani & Spontan</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Cepat tanggap dalam bertindak, namun belajar untuk selalu mengeram rasa terburu-burunya.
+                    </p>
+                </div>
+
+                <!-- SALSA -->
+                <div onclick="selectCharacter('salsa')" id="card-char-salsa" class="char-card cursor-pointer p-5 rounded-2xl bg-slate-900 border-2 border-slate-800 hover:border-cyan-500/50 transition duration-200 flex flex-col items-center text-center group">
+                    <div class="w-20 h-20 rounded-2xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+                        <svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-purple-400">SALSA</h3>
+                    <p class="text-xs text-purple-400 font-medium mb-2">Teliti & Cermat</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Suka memeriksa detail huruf demi huruf dan alamat email hingga hal terdetil.
+                    </p>
+                </div>
+
+                <!-- BIMO -->
+                <div onclick="selectCharacter('bimo')" id="card-char-bimo" class="char-card cursor-pointer p-5 rounded-2xl bg-slate-900 border-2 border-slate-800 hover:border-cyan-500/50 transition duration-200 flex flex-col items-center text-center group">
+                    <div class="w-20 h-20 rounded-2xl bg-blue-950/60 border border-blue-500/30 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+                        <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-blue-400">BIMO</h3>
+                    <p class="text-xs text-blue-400 font-medium mb-2">Suka Teknologi</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Penasaran dengan cara kerja sistem digital dan cara peretas mengelabuhi target.
+                    </p>
+                </div>
+
+                <!-- NAYA -->
+                <div onclick="selectCharacter('naya')" id="card-char-naya" class="char-card cursor-pointer p-5 rounded-2xl bg-slate-900 border-2 border-slate-800 hover:border-cyan-500/50 transition duration-200 flex flex-col items-center text-center group">
+                    <div class="w-20 h-20 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-emerald-400">NAYA</h3>
+                    <p class="text-xs text-emerald-400 font-medium mb-2">Aktif Media Sosial</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Peka terhadap gaya komunikasi online, tren pesan penipuan, dan manipulasi psikologis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Confirmation Panel -->
+            <div id="char-confirm-box" class="hidden max-w-md mx-auto bg-slate-900 border border-cyan-500/40 p-5 rounded-2xl text-center shadow-xl">
+                <p class="text-xs text-slate-400">Karakter Terpilih:</p>
+                <h4 id="selected-char-name" class="text-xl font-bold text-cyan-400 my-1">RAKA</h4>
+                <p id="selected-char-desc" class="text-xs text-slate-300 mb-4">"Kemampuan Utama: Siap bertindak cepat namun penuh perhatian."</p>
+                
+                <button onclick="confirmCharacter()" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm shadow-md transition">
+                    LANJUT KE BRIEFING
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== 3. BRIEFING SCREEN ==================== -->
+        <section id="screen-briefing" class="screen-view hidden py-4 max-w-2xl mx-auto">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <!-- Glow Accent -->
+                <div class="absolute -right-16 -top-16 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
+
+                <!-- Mentor Avatar Header -->
+                <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-800">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-black text-xl border border-indigo-400/30">
+                        🤖
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            NOVA
+                            <span class="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-800">Digital Mentor</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Pusat Investigasi Siber Sekolah</p>
+                    </div>
+                </div>
+
+                <!-- Dialogue Text -->
+                <div class="space-y-4 text-sm text-slate-300 leading-relaxed mb-8">
+                    <p class="text-cyan-400 font-semibold text-base">
+                        "Selamat datang, Detektif <span id="briefing-char-name">Raka</span>!"
+                    </p>
+                    <p>
+                        Hari ini kamu akan mendeteksi <strong class="text-white">2 Kasus Khusus</strong> yang disesuaikan dengan latar belakang dan keahlianmu.
+                    </p>
+                    <p class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-slate-300 italic">
+                        "Jangan terburu-buru mengambil keputusan. Perhatikan baik-baik sinyal bahaya yang tersembunyi."
+                    </p>
+                    <div>
+                        <p class="font-semibold text-white mb-2">Selalu ajukan 5 Pertanyaan Emas ini:</p>
+                        <ul class="space-y-1.5 text-xs text-slate-300 pl-2">
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <strong>SIAPA</strong> yang mengirim pesan?
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <strong>APA</strong> yang mereka minta (password, data, OTP)?
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <strong>KE MANA</strong> tautan itu mengarah?
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <strong>APAKAH</strong> pesannya memaksa atau mendesak?
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <strong>BISAKAH</strong> informasi ini diverifikasi lewat saluran resmi?
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button onclick="startCases()" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm tracking-wide shadow-lg shadow-cyan-500/20 transition transform active:scale-95">
+                    MULAI INVESTIGASI KASUS 1
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== 4. CASE INVESTIGATION SCREEN ==================== -->
+        <section id="screen-case" class="screen-view hidden py-2">
+            
+            <!-- Progress Banner -->
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span id="case-badge-number" class="px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-bold">
+                        KASUS 1/2
+                    </span>
+                    <span id="case-title-header" class="text-xs sm:text-sm font-semibold text-slate-200">
+                        Judul Kasus
+                    </span>
+                </div>
+                <!-- Step Indicator (2 Cases) -->
+                <div id="case-dots-container" class="flex items-center gap-1.5">
+                    <div id="dot-1" class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                    <div id="dot-2" class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- LEFT / MAIN: Digital Message Display -->
+                <div class="lg:col-span-7 flex flex-col gap-4">
+                    
+                    <!-- Simulated Smartphone View -->
+                    <div class="bg-slate-900 border-2 border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
+                        <!-- Top Phone Notch/Header -->
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                <span class="text-xs font-mono text-slate-400">📱 PESAN MASUK</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-slate-500">Diterima Hari Ini</span>
+                        </div>
+
+                        <!-- Bedah Pesan Control Helper Notice -->
+                        <div class="mb-4 bg-cyan-950/30 border border-cyan-800/40 rounded-xl p-2.5 flex items-center justify-between text-xs text-cyan-300">
+                            <span class="flex items-center gap-1.5">
+                                <span>💡</span> Klik tombol <strong>"Bedah Pesan"</strong> untuk melihat analisis tiap bagian.
+                            </span>
+                        </div>
+
+                        <!-- Message Content Area -->
+                        <div class="space-y-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs sm:text-sm">
+                            
+                            <!-- Sender & Email Field -->
+                            <div id="part-pengirim" class="highlight-part p-2 rounded-lg hover:bg-slate-900 transition">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 block">Pengirim</span>
+                                <div id="msg-sender-name" class="font-bold text-slate-100 text-sm">ADMIN SEKOLAH</div>
+                                <div id="msg-sender-email" class="font-mono text-slate-400 text-xs">admin-sekolah123@gmail.com</div>
+                            </div>
+
+                            <hr class="border-slate-800 my-2">
+
+                            <!-- Message Body -->
+                            <div id="part-isi" class="highlight-part p-2 rounded-lg hover:bg-slate-900 transition space-y-2">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 block">Isi Pesan</span>
+                                <div id="msg-body-text" class="text-slate-300 leading-relaxed whitespace-pre-line">
+                                    Selamat pagi. Akun siswa sedang diperbarui.
+                                </div>
+                            </div>
+
+                            <!-- Link Field -->
+                            <div id="part-tautan" class="highlight-part p-2 rounded-lg hover:bg-slate-900 transition">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 block">Tautan / Action</span>
+                                <div id="msg-link" class="font-mono text-cyan-400 underline break-all font-semibold my-1">
+                                    http://verifikasi-akun.example
+                                </div>
+                            </div>
+
+                            <!-- Urgent Urgency/Demand -->
+                            <div id="part-tekana" class="highlight-part p-2 rounded-lg hover:bg-slate-900 transition">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 block">Catatan Tambahan / Tekanan</span>
+                                <div id="msg-urgency" class="text-amber-400 font-medium">
+                                    Harap segera dilakukan dalam 30 menit agar akun tidak dinonaktifkan.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Inspection Tool Buttons -->
+                        <div class="mt-4">
+                            <p class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">🔬 Bedah Pesan Interaktif:</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button onclick="inspectPart('pengirim')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">
+                                    [ PENGIRIM ]
+                                </button>
+                                <button onclick="inspectPart('isi')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">
+                                    [ ISI PESAN ]
+                                </button>
+                                <button onclick="inspectPart('tautan')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">
+                                    [ TAUTAN ]
+                                </button>
+                                <button onclick="inspectPart('tekana')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">
+                                    [ TEKANAN / URGENSI ]
+                                </button>
+                            </div>
+                            <div id="inspect-tooltip" class="mt-3 p-3 rounded-xl bg-cyan-950/60 border border-cyan-500/40 text-xs text-cyan-200 hidden">
+                                <strong id="inspect-title" class="block font-bold mb-1">Analisis Bagian:</strong>
+                                <span id="inspect-desc">Klik tombol di atas untuk menganalisis bagian pesan ini.</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- CLASSIFICATION SELECTION AREA -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+                        <h3 class="text-sm font-bold text-white mb-3 text-center uppercase tracking-wide">
+                            APA HASIL INVESTIGASIMU?
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button onclick="submitClassification('PESAN SAH')" class="p-3.5 rounded-xl border border-slate-700 bg-slate-800 hover:border-emerald-500 hover:bg-emerald-950/30 text-slate-100 font-bold text-xs sm:text-sm transition flex flex-col items-center justify-center gap-1 group">
+                                <span class="text-lg group-hover:scale-110 transition">✅</span>
+                                <span>PESAN SAH</span>
+                            </button>
+                            
+                            <button onclick="submitClassification('PHISHING')" class="p-3.5 rounded-xl border border-slate-700 bg-slate-800 hover:border-red-500 hover:bg-red-950/30 text-slate-100 font-bold text-xs sm:text-sm transition flex flex-col items-center justify-center gap-1 group">
+                                <span class="text-lg group-hover:scale-110 transition">🎣</span>
+                                <span>PHISHING</span>
+                            </button>
+                            
+                            <button onclick="submitClassification('PENIPUAN')" class="p-3.5 rounded-xl border border-slate-700 bg-slate-800 hover:border-amber-500 hover:bg-amber-950/30 text-slate-100 font-bold text-xs sm:text-sm transition flex flex-col items-center justify-center gap-1 group">
+                                <span class="text-lg group-hover:scale-110 transition">⚠️</span>
+                                <span>PENIPUAN</span>
+                            </button>
+                            
+                            <button onclick="submitClassification('PESAN MENCURIGAKAN')" class="p-3.5 rounded-xl border border-slate-700 bg-slate-800 hover:border-purple-500 hover:bg-purple-950/30 text-slate-100 font-bold text-xs sm:text-sm transition flex flex-col items-center justify-center gap-1 group">
+                                <span class="text-lg group-hover:scale-110 transition">❓</span>
+                                <span>MENCURIGAKAN</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: Detective Tool Checklist Sidebar -->
+                <div class="lg:col-span-5 flex flex-col gap-4">
+                    
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl">
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+                            <span class="text-xl">🔎</span>
+                            <div>
+                                <h3 class="text-sm font-bold text-white">ALAT DETEKTIF</h3>
+                                <p class="text-[11px] text-slate-400">Checklist bantu berpikir (Bukan nilai)</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs">
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 cursor-pointer transition">
+                                <input type="checkbox" class="chk-detective mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-0">
+                                <span class="text-slate-300">Saya mengenali pengirimnya dengan pasti.</span>
+                            </label>
+                            
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 cursor-pointer transition">
+                                <input type="checkbox" class="chk-detective mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-0">
+                                <span class="text-slate-300">Alamat email / nomor terbukti resmi.</span>
+                            </label>
+
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 cursor-pointer transition">
+                                <input type="checkbox" class="chk-detective mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-0">
+                                <span class="text-slate-300">Saya tahu persis ke mana tautan mengarah.</span>
+                            </label>
+
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 cursor-pointer transition">
+                                <input type="checkbox" class="chk-detective mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-0">
+                                <span class="text-slate-300">Pesan tidak meminta Password, OTP, atau PIN.</span>
+                            </label>
+
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 cursor-pointer transition">
+                                <input type="checkbox" class="chk-detective mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-0">
+                                <span class="text-slate-300">Pesan tidak menggunakan gertakan / tekanan waktu.</span>
+                            </label>
+
+                            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 cursor-pointer transition">
+                                <input type="checkbox" class="chk-detective mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-0">
+                                <span class="text-slate-300">Informasi ini bisa dikonfirmasi langsung di sekolah.</span>
+                            </label>
+                        </div>
+
+                        <!-- Hints box -->
+                        <div class="mt-4 p-3 bg-indigo-950/30 border border-indigo-800/40 rounded-xl text-xs text-indigo-300">
+                            <strong>📌 Petunjuk Detektif:</strong>
+                            <p id="case-specific-hint" class="mt-1 text-slate-300">
+                                Perhatikan baik-baik domain email pengirim dan batas waktu yang diberikan.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== 5. FEEDBACK MODAL / RESULT VIEW ==================== -->
+        <div id="modal-feedback" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-8">
+                
+                <div class="text-center mb-6">
+                    <span class="inline-block p-3 rounded-2xl bg-cyan-950 text-cyan-400 border border-cyan-800 text-2xl mb-2">
+                        🕵️‍♂️ HASIL INVESTIGASI
+                    </span>
+                    <h3 id="feedback-user-choice-title" class="text-xl font-bold text-white">
+                        Keputusanmu: PHISHING
+                    </h3>
+                    <p id="feedback-result-subtitle" class="text-xs text-slate-400 mt-1">
+                        Analisis Temuan Detektif
+                    </p>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm">
+                    
+                    <!-- Temuan Detektif -->
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <h4 class="font-bold text-cyan-400 flex items-center gap-2 mb-1">
+                            <span>🔎</span> TEMUAN DETEKTIF
+                        </h4>
+                        <p id="feedback-temuan" class="text-slate-300 leading-relaxed">
+                            Alamat email pengirim tidak berasal dari domain resmi sekolah. Terdapat paksaan batas waktu 30 menit.
+                        </p>
+                    </div>
+
+                    <!-- Yang Perlu Diperhatikan -->
+                    <div class="p-4 rounded-2xl bg-amber-950/20 border border-amber-900/40">
+                        <h4 class="font-bold text-amber-400 flex items-center gap-2 mb-1">
+                            <span>⚠️</span> YANG PERLU DIPERHATIKAN
+                        </h4>
+                        <p id="feedback-perhatian" class="text-slate-300 leading-relaxed">
+                            Penipu sering menggunakan nama resmi seperti 'ADMIN SEKOLAH' agar korban langsung percaya tanpa mengecek alamat email pastinya.
+                        </p>
+                    </div>
+
+                    <!-- Tindakan Aman -->
+                    <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-900/40">
+                        <h4 class="font-bold text-emerald-400 flex items-center gap-2 mb-1">
+                            <span>🛡️</span> TINDAKAN AMAN
+                        </h4>
+                        <p id="feedback-tindakan" class="text-slate-300 leading-relaxed">
+                            Jangan klik tautan tersebut. Laporkan pesan ke pihak guru atau staf TI sekolah untuk verifikasi.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="nextCaseOrReport()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm shadow-lg transition">
+                        LANJUT KE KASUS BERIKUTNYA
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==================== 6. DETECTIVE REPORT SCREEN ==================== -->
+        <section id="screen-report" class="screen-view hidden py-4 max-w-3xl mx-auto">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 rounded-2xl bg-cyan-950 border border-cyan-500/40 mx-auto flex items-center justify-center text-3xl mb-3">
+                        📋
+                    </div>
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">MISI SELESAI</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">LAPORAN DETEKTIF SIBER</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-2">
+                        Investigasi selesai. Sekarang kamu memiliki kebiasaan penting untuk menghadapi dunia digital!
+                    </p>
+                </div>
+
+                <!-- Principles Grid (STOP CHECK VERIFY PROTECT) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span class="text-cyan-400 font-black text-sm block mb-1">1. STOP</span>
+                        <p class="text-xs text-slate-300">Jangan langsung mengklik tautan atau membalas pesan secara terburu-buru.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span class="text-indigo-400 font-black text-sm block mb-1">2. CHECK</span>
+                        <p class="text-xs text-slate-300">Periksa alamat email pengirim, bahasa yang digunakan, dan ke mana tautan mengarah.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span class="text-purple-400 font-black text-sm block mb-1">3. VERIFY</span>
+                        <p class="text-xs text-slate-300">Konfirmasi kebenaran informasi melalui saluran atau pihak resmi secara langsung.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span class="text-emerald-400 font-black text-sm block mb-1">4. PROTECT</span>
+                        <p class="text-xs text-slate-300">Jangan pernah memberikan Password, OTP, PIN, atau data pribadi sensitif kepada siapa pun.</p>
+                    </div>
+                </div>
+
+                <!-- Learning Recap List -->
+                <div class="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 mb-8 space-y-3 text-xs sm:text-sm">
+                    <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Ringkasan Kebiasaan Aman:</h4>
+                    <div class="flex items-start gap-2.5 text-slate-300">
+                        <span class="text-cyan-400 font-bold">🔎</span>
+                        <span><strong>PERIKSA PENGIRIM:</strong> Alamat email asli seringkali berbeda dengan nama yang ditampilkan.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5 text-slate-300">
+                        <span class="text-cyan-400 font-bold">🔗</span>
+                        <span><strong>PERIKSA TAUTAN:</strong> Selalu cermati domain URL sebelum mengklik.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5 text-slate-300">
+                        <span class="text-cyan-400 font-bold">🔐</span>
+                        <span><strong>JAGA DATA RAHASIA:</strong> OTP dan Password tidak boleh diberikan kepada siapa pun.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5 text-slate-300">
+                        <span class="text-cyan-400 font-bold">⚠️</span>
+                        <span><strong>WASPADAI TEKANAN:</strong> Gertakan 'segera dalam 30 menit' adalah taktik manipulasi psikologis.</span>
+                    </div>
+                </div>
+
+                <button onclick="goToScreen('home')" class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold text-sm tracking-wide shadow-lg shadow-emerald-500/20 transition">
+                    ✓ SELESAI & KEMBALI KE BERANDA
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== GUIDE MODAL ==================== -->
+    <div id="modal-guide" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span>📖</span> PETUNJUK DETEKTIF SIBER
+                </h3>
+                <button onclick="closeGuideModal()" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
+            </div>
+            
+            <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p class="font-medium text-cyan-400">
+                    "Sebagai Detektif Siber, jangan terburu-buru percaya pada pesan."
+                </p>
+                <p>Selalu periksa tiga hal utama pada setiap pesan digital:</p>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                    <div>
+                        <strong class="text-indigo-400">1. SIAPA?</strong>
+                        <p class="text-slate-400 text-xs">Siapa yang benar-benar mengirim pesan? Periksa alamat email asli atau nomornya.</p>
+                    </div>
+                    <div>
+                        <strong class="text-indigo-400">2. APA?</strong>
+                        <p class="text-slate-400 text-xs">Apa yang diminta? Apakah mereka meminta password, OTP, atau uang?</p>
+                    </div>
+                    <div>
+                        <strong class="text-indigo-400">3. KE MANA?</strong>
+                        <p class="text-slate-400 text-xs">Ke mana tautan (link) membawa kita? Apakah alamat websitunya aneh?</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeGuideModal()" class="w-full mt-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700">
+                Paham, Tutup Petunjuk
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-3 text-center text-[11px] text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1">
+            <span>Cyber Detective — Modul Pembelajaran Informatika SMP IX</span>
+            <span class="text-slate-600">Simulasi Edukasi Siber &bull; Tanpa Sistem Skor / Kompetisi</span>
+        </div>
+    </footer>
+
+    <!-- ==================== APPLICATION JAVASCRIPT ==================== -->
+    <script>
+        /*
+         * CYBER DETECTIVE STATE & LOGIC
+         */
+
+        // Character-Specific Cases Data Definitions (2 cases each)
+        const CHARACTER_CASES = {
+            raka: [
+                {
+                    id: 1,
+                    title: "Peringatan Darurat Akun Terblokir",
+                    senderName: "KEAMANAN SYSTEM AKUN",
+                    senderEmail: "security-alert-center99@gmail.com",
+                    bodyText: "PERINGATAN DARURAT!\nAkun siswa Anda terdeteksi aktivitas mencurigakan dan akan DIBEKUKAN PERMANEN dalam 15 menit.\n\nSegera klik tombol verifikasi di bawah ini untuk menyelamatkan akun Anda:",
+                    link: "http://pulihkan-segera-akun-sekolah.net",
+                    urgency: "Sisa waktu 15 menit! Jika terlambat, seluruh data tugas Anda akan dihapus permanen!",
+                    target: "PHISHING",
+                    hint: "Karakter Raka: Hati-hati rasa panik mendadak! Perhatikan domain email gmail dan gertakan 15 menit.",
+                    inspections: {
+                        pengirim: "Menggunakan nama gertakan 'KEAMANAN SYSTEM AKUN' tapi emailnya @gmail.com gratisan.",
+                        isi: "Menimbulkan rasa panik berlebihan agar korban langsung klik tanpa berpikir.",
+                        tautan: "Link mengarah ke domain asing '.net', bukan portal resmi sekolah.",
+                        tekana: "Ancaman 15 menit adalah taktik manipulasi psikologis khas phisher!"
+                    },
+                    feedback: {
+                        temuan: "Email pengirim menggunakan domain gratisan dan memanfaatkan kepanikan batas waktu 15 menit.",
+                        perhatian: "Detektif seperti Raka perlu mengeram ketergesa-gesaan. Ancaman instan hampir selalu merupakan Phishing.",
+                        tindakan: "Jangan panic-click! Tenang, abaikan pesan, dan verifikasi langsung ke admin TI sekolah."
+                    }
+                },
+                {
+                    id: 2,
+                    title: "Perubahan Pengumuman Ujian Susulan",
+                    senderName: "Pak Hendra (Waka Kurikulum)",
+                    senderEmail: "kurikulum@sekolah.sch.id",
+                    bodyText: "Pemberitahuan untuk seluruh siswa Kelas IX.\n\nJadwal gladi bersih asesmen dipindahkan ke hari Kamis pukul 08.00 WIB di Aula Utama.\n\nInfo lengkap dapat dilihat di papan pengumuman sekolah.",
+                    link: "Tidak ada tautan",
+                    urgency: "Konfirmasi kehadiran dapat disampaikan ke wali kelas masing-masing.",
+                    target: "PESAN SAH",
+                    hint: "Meskipun berita penting, pesan ini disampaikan tenang melalui email resmi (.sch.id) tanpa link aneh.",
+                    inspections: {
+                        pengirim: "Alamat email resmi sekolah (kurikulum@sekolah.sch.id) dan nama pejabat sekolah jelas.",
+                        isi: "Memberikan informasi perubahan jadwal kegiatan sekolah secara formal dan jelas.",
+                        tautan: "Tidak ada link yang meminta input data pribadi.",
+                        tekana: "Bahasa wajar, komunikatif, dan mengarahkan konfirmasi ke wali kelas."
+                    },
+                    feedback: {
+                        temuan: "Pesan dikirim dari domain resmi sekolah (.sch.id) dan tidak meminta password atau link berbahaya.",
+                        perhatian: "Informasi sekolah yang sah selalu transparan dan dapat dikonfirmasi ke guru/wali kelas.",
+                        tindakan: "Pesan SAH. Catat perubahan jadwal ujian dan persiapkan diri."
+                    }
+                }
+            ],
+            salsa: [
+                {
+                    id: 1,
+                    title: "Formulir Beasiswa Siswa Berprestasi",
+                    senderName: "PANITIA BEASISWA NASIONAL",
+                    senderEmail: "info@beasiswa-kemdikbud.org",
+                    bodyText: "Selamat! Anda terpilih sebagai calon penerima Beasiswa Prestasi SMP 2026.\n\nIsi formulir pendaftaran ulang serta lampirkan foto KTP/Kartu Pelajar dan Nomor Rekening Orang Tua pada tautan berikut:",
+                    link: "http://beasiswa-kemdikbud.org/registrasi-ulang",
+                    urgency: "Batas pengisian formulir ditutup malam ini pukul 23.59 WIB.",
+                    target: "PHISHING",
+                    hint: "Karakter Salsa: Cermati ejaan domain! Situs resmi pemerintah menggunakan domain '.go.id', bukan '.org'.",
+                    inspections: {
+                        pengirim: "Email menggunakan domain '.org'. Lembaga kementerian resmi Indonesia menggunakan domain '.go.id'.",
+                        isi: "Meminta dokumen identitas dan nomor rekening orang tua.",
+                        tautan: "Tautan tiruan yang mirip situs asli (typosquatting/domain spoofing).",
+                        tekana: "Membatasi waktu hingga malam ini agar korban tidak sempat memverifikasi ke sekolah."
+                    },
+                    feedback: {
+                        temuan: "Domain 'beasiswa-kemdikbud.org' adalah domain tiruan. Domain resmi kementerian adalah .go.id.",
+                        perhatian: "Penipu sering membuat domain yang sangat mirip dengan lembaga resmi untuk mengelabui mata yang kurang teliti.",
+                        tindakan: "Jangan isi formulir tersebut. Laporkan tautan penipuan ini ke guru Bimbingan Konseling (BK)."
+                    }
+                },
+                {
+                    id: 2,
+                    title: "Pengingat Pengembalian Buku Perpustakaan",
+                    senderName: "Perpustakaan Sekolah",
+                    senderEmail: "perpustakaan@sekolah.sch.id",
+                    bodyText: "Pengingat Rutin Perpustakaan:\nBuku koleksi 'Ensiklopedia Sains' yang Anda pinjam akan jatuh tempo pada hari Jumat.\n\nMohon dapat dikembalikan tepat waktu ke ruang perpustakaan.",
+                    link: "Tidak ada tautan",
+                    urgency: "Layanan perpustakaan buka setiap hari kerja pukul 07.00 - 15.00 WIB.",
+                    target: "PESAN SAH",
+                    hint: "Salsa dapat mencocokkan detail domain perpustakaan@sekolah.sch.id dengan daftar alamat resmi sekolah.",
+                    inspections: {
+                        pengirim: "Email perpustakaan resmi (.sch.id) tercatat di database sekolah.",
+                        isi: "Detail judul buku dan tenggat waktu sesuai dengan catatan peminjaman.",
+                        tautan: "Tidak memuat link eksternal.",
+                        tekana: "Pemberitahuan sopan dan informatif."
+                    },
+                    feedback: {
+                        temuan: "Alamat email valid, detail informasi relevan, dan tidak ada ancaman atau tautan berisiko.",
+                        perhatian: "Ketelitian Salsa membuktikan bahwa pesan ini sepenuhnya aman dan valid.",
+                        tindakan: "Pesan SAH. Kembalikan buku ke perpustakaan sesuai jam operasional."
+                    }
+                }
+            ],
+            bimo: [
+                {
+                    id: 1,
+                    title: "Klaim Voucher Game & Top-Up Gratis",
+                    senderName: "GAMER REWARD CENTER",
+                    senderEmail: "free-diamonds-claim@vouchers-game-free.net",
+                    bodyText: "SELAMAT! ID Game kamu terpilih mendapatkan 5000 Diamond Game Gratis!\n\nUntuk mengklaim voucher:\n1. Masukkan ID & Password akun game kamu\n2. Masukkan nomor HP & Kode OTP WhatsApp yang masuk ke HP kamu.",
+                    link: "http://claim-diamond-gratis.example",
+                    urgency: "Klaim dalam 10 menit sebelum kuota klaim habis!",
+                    target: "PENIPUAN",
+                    hint: "Karakter Bimo: Kamu pasti paham aturan emas keamanan IT — JANGAN PERNAH berikan Password & Kode OTP!",
+                    inspections: {
+                        pengirim: "Domain pengirim mencurigakan dan bukan distributor game resmi.",
+                        isi: "Meminta Password Akun dan Kode OTP WhatsApp secara terang-terangan.",
+                        tautan: "Web phishing yang dirancang untuk mengambil alih akun game dan nomor WhatsApp.",
+                        tekana: "Iming-iming barang gratis terbatas untuk merusak logika berpikir."
+                    },
+                    feedback: {
+                        temuan: "Pesan meminta Password dan Kode OTP dengan iming-iming item game gratis.",
+                        perhatian: "Kode OTP adalah kunci benteng keamanan digital. Menyerahkan OTP berarti menyerahkan akses total ke akunmu!",
+                        tindakan: "Sangat Berbahaya! Jangan pernah berikan OTP. Segera tutup halaman tersebut."
+                    }
+                },
+                {
+                    id: 2,
+                    title: "Jadwal Pemeliharaan Wi-Fi Lab Komputer",
+                    senderName: "Tim IT Sekolah",
+                    senderEmail: "it-support@sekolah.sch.id",
+                    bodyText: "Pemberitahuan Pemeliharaan Jaringan:\n\nJaringan Wi-Fi Lab Komputer akan menjalani pemeliharaan sistem rutin pada Sabtu pukul 13.00 WIB.\n\nAkses internet lab akan dinonaktifkan sementara selama 2 jam.",
+                    link: "Tidak ada tautan",
+                    urgency: "Untuk pertanyaan teknis, silakan hubungi Ruang Server IT Gedung B.",
+                    target: "PESAN SAH",
+                    hint: "Informasi pemeliharaan sistem teknis yang resmi dari tim IT sekolah tanpa meminta credential.",
+                    inspections: {
+                        pengirim: "Alamat email it-support resmi (.sch.id).",
+                        isi: "Penjelasan teknis downtime jaringan yang logis dan terstruktur.",
+                        tautan: "Tidak meminta login credential atau link tidak dikenal.",
+                        tekana: "Informatif dan menyediakan kontak lokasi fisik ruang server."
+                    },
+                    feedback: {
+                        temuan: "Pesan resmi dari unit IT sekolah tanpa ada permintaan data sensitif atau tindakan meragukan.",
+                        perhatian: "Pengumuman teknis yang sah selalu disampaikan dengan terbuka tanpa meminta akun pengguna.",
+                        tindakan: "Pesan SAH. Harap sesuaikan kegiatan penggunaan lab dengan jadwal pemeliharaan."
+                    }
+                }
+            ],
+            naya: [
+                {
+                    id: 1,
+                    title: "DM Viral: Foto/Video Kamu Tersebar",
+                    senderName: "Teman Sosial Media",
+                    senderEmail: "@user_anonim_7712",
+                    bodyText: "Eh Naya, ini beneran foto kamu yang lagi viral di grup TikTok?? 😱😱\nCoba cek deh sebelum videonya makin rame disebar orang!",
+                    link: "http://media-viral-check.example/view-photo",
+                    urgency: "Cepat buka sebelum link-nya diblokir!",
+                    target: "PESAN MENCURIGAKAN",
+                    hint: "Karakter Naya: Waspada rekayasa sosial! Ini taktik jebakan rasa penasaran dan emosi di media sosial.",
+                    inspections: {
+                        pengirim: "Akun anonim/tidak dikenal yang tiba-tiba mengirimkan pesan pribadi (DM).",
+                        isi: "Menggunakan kalimat umpan emosional (social engineering) agar korban panik/penasaran.",
+                        tautan: "Link Jebakan (Malicious Link) yang bisa mencuri cookie login sosial media.",
+                        tekana: "Mendesak korban agar langsung mengklik link tanpa verifikasi."
+                    },
+                    feedback: {
+                        temuan: "Pesan menggunakan rekayasa sosial (social engineering) dengan memicu rasa cemas & penasaran.",
+                        perhatian: "Umpan 'foto kamu viral' adalah taktik klasik untuk meretas akun media sosial remaja.",
+                        tindakan: "Jangan klik link tersebut! Jangan panik, abaikan pesan atau tanyakan langsung ke teman secara offline."
+                    }
+                },
+                {
+                    id: 2,
+                    title: "Lomba Konten Kreatif Medsos Sekolah",
+                    senderName: "OSIS & Tim Medsos Sekolah",
+                    senderEmail: "osis@sekolah.sch.id",
+                    bodyText: "Halo Teman-teman!\n\nOSIS mengadakan Lomba Video Pendek Kreatif Tema 'Cyber Safety'.\n\nSyarat & ketentuan dapat dibaca di mading sekolah atau akun Instagram resmi @osis_sekolahresmi.",
+                    link: "Tidak ada tautan",
+                    urgency: "Pendaftaran gratis dan terbuka untuk seluruh siswa Kelas VII - IX.",
+                    target: "PESAN SAH",
+                    hint: "Naya bisa memverifikasi info ini langsung di akun IG resmi OSIS yang sudah terverifikasi di sekolah.",
+                    inspections: {
+                        pengirim: "Email resmi OSIS sekolah (.sch.id).",
+                        isi: "Pengumuman kegiatan positif siswa tanpa meminta data sensitif.",
+                        tautan: "Mengarahkan ke saluran resmi yang sudah dikenal siswa di sekolah.",
+                        tekana: "Bahasa ajakan yang bersahabat dan transparan."
+                    },
+                    feedback: {
+                        temuan: "Pesan acara siswa yang sah dari OSIS sekolah, tidak meminta data rahasia atau link berbahaya.",
+                        perhatian: "Informasi lomba sekolah yang asli selalu diumumkan terbuka di mading dan medsos resmi.",
+                        tindakan: "Pesan SAH. Naya bisa ikut berpartisipasi dalam lomba poster/video kreatif ini!"
+                    }
+                }
+            ]
+        };
+
+        // Application State
+        let state = {
+            selectedCharacter: 'raka',
+            currentCaseIndex: 0,
+            answers: {}
+        };
+
+        // Helper to get active cases based on chosen character
+        function getCurrentCases() {
+            return CHARACTER_CASES[state.selectedCharacter] || CHARACTER_CASES.raka;
+        }
+
+        // Initialization on window load
+        window.onload = function() {
+            loadSavedState();
+            updateHeaderBadge();
+        };
+
+        // Screen Navigation Function
+        function goToScreen(screenId) {
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`screen-${screenId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Character Selection Logic
+        function selectCharacter(charKey) {
+            state.selectedCharacter = charKey;
+            state.currentCaseIndex = 0; // Reset case index on character switch
+            
+            // Highlight active card
+            document.querySelectorAll('.char-card').forEach(card => {
+                card.classList.remove('border-cyan-500', 'bg-slate-800');
+                card.classList.add('border-slate-800', 'bg-slate-900');
+            });
+
+            const activeCard = document.getElementById(`card-char-${charKey}`);
+            if (activeCard) {
+                activeCard.classList.remove('border-slate-800', 'bg-slate-900');
+                activeCard.classList.add('border-cyan-500', 'bg-slate-800');
+            }
+
+            // Update confirmation details
+            const names = {
+                raka: "RAKA",
+                salsa: "SALSA",
+                bimo: "BIMO",
+                naya: "NAYA"
+            };
+            const descs = {
+                raka: "Berani & Spontan — Menangani kasus kepanikan batas waktu & perubahan jadwal.",
+                salsa: "Teliti & Cermat — Menangani kasus domain tiruan (spoofing) & dokumen resmi perpustakaan.",
+                bimo: "Suka Teknologi — Menangani kasus penipuan voucher game/OTP & kabar IT lab.",
+                naya: "Aktif Media Sosial — Menangani kasus jebakan rekayasa sosial (DM viral) & lomba OSIS."
+            };
+
+            document.getElementById('selected-char-name').innerText = names[charKey];
+            document.getElementById('selected-char-desc').innerText = descs[charKey];
+            document.getElementById('char-confirm-box').classList.remove('hidden');
+
+            saveState();
+            updateHeaderBadge();
+        }
+
+        function confirmCharacter() {
+            document.getElementById('briefing-char-name').innerText = document.getElementById('selected-char-name').innerText;
+            goToScreen('briefing');
+        }
+
+        // Start Investigation Cases
+        function startCases() {
+            state.currentCaseIndex = 0;
+            renderCurrentCase();
+            goToScreen('case');
+        }
+
+        // Render Active Case Data
+        function renderCurrentCase() {
+            const cases = getCurrentCases();
+            const currentData = cases[state.currentCaseIndex];
+            
+            // Update Case Badge & Title
+            document.getElementById('case-badge-number').innerText = `KASUS ${currentData.id}/2`;
+            document.getElementById('case-title-header').innerText = currentData.title;
+
+            // Update Progress Dots (2 dots)
+            for (let i = 1; i <= 2; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (dot) {
+                    if (i <= state.currentCaseIndex + 1) {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-cyan-400";
+                    } else {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-slate-800";
+                    }
+                }
+            }
+
+            // Fill Message Fields
+            document.getElementById('msg-sender-name').innerText = currentData.senderName;
+            document.getElementById('msg-sender-email').innerText = currentData.senderEmail;
+            document.getElementById('msg-body-text').innerText = currentData.bodyText;
+            document.getElementById('msg-link').innerText = currentData.link;
+            document.getElementById('msg-urgency').innerText = currentData.urgency;
+            document.getElementById('case-specific-hint').innerText = currentData.hint;
+
+            // Reset Detective Checklist Checkboxes
+            document.querySelectorAll('.chk-detective').forEach(chk => chk.checked = false);
+
+            // Reset Inspector Tooltip
+            document.getElementById('inspect-tooltip').classList.add('hidden');
+            document.querySelectorAll('.highlight-part').forEach(el => el.classList.remove('active'));
+        }
+
+        // Interactive "Bedah Pesan" Inspector
+        function inspectPart(partKey) {
+            const cases = getCurrentCases();
+            const currentData = cases[state.currentCaseIndex];
+            
+            // Highlight part element
+            document.querySelectorAll('.highlight-part').forEach(el => el.classList.remove('active'));
+            const targetPart = document.getElementById(`part-${partKey}`);
+            if (targetPart) {
+                targetPart.classList.add('active');
+            }
+
+            // Display Tooltip
+            const tooltip = document.getElementById('inspect-tooltip');
+            const titleEl = document.getElementById('inspect-title');
+            const descEl = document.getElementById('inspect-desc');
+
+            const labels = {
+                pengirim: "PENGIRIM & ALAMAT",
+                isi: "ISI PESAN",
+                tautan: "TAUTAN / LINK",
+                tekana: "TEKANAN / URGENSI"
+            };
+
+            titleEl.innerText = `🔍 Bedah Pesan: ${labels[partKey] || partKey.toUpperCase()}`;
+            descEl.innerText = currentData.inspections[partKey] || "Periksa kembali bagian ini.";
+            
+            tooltip.classList.remove('hidden');
+        }
+
+        // Submit Classification Choice
+        function submitClassification(userChoice) {
+            const cases = getCurrentCases();
+            const currentData = cases[state.currentCaseIndex];
+            
+            // Save response in state
+            state.answers[`${state.selectedCharacter}_${currentData.id}`] = {
+                choice: userChoice,
+                isMatch: userChoice === currentData.target
+            };
+            saveState();
+
+            // Populate Feedback Modal
+            const modal = document.getElementById('modal-feedback');
+            const titleEl = document.getElementById('feedback-user-choice-title');
+            const subEl = document.getElementById('feedback-result-subtitle');
+
+            if (userChoice === currentData.target) {
+                titleEl.innerHTML = `Pilihanmu: <span class="text-emerald-400">${userChoice}</span>`;
+                subEl.innerText = "Tepat sekali! Hasil analisismu sesuai dengan fakta pesan.";
+            } else {
+                titleEl.innerHTML = `Pilihanmu: <span class="text-amber-400">${userChoice}</span>`;
+                subEl.innerText = `Menarik. Mari kita periksa bukti-bukti yang ada pada pesan ini. (Klasifikasi paling tepat: ${currentData.target})`;
+            }
+
+            document.getElementById('feedback-temuan').innerText = currentData.feedback.temuan;
+            document.getElementById('feedback-perhatian').innerText = currentData.feedback.perhatian;
+            document.getElementById('feedback-tindakan').innerText = currentData.feedback.tindakan;
+
+            modal.classList.remove('hidden');
+        }
+
+        // Advance to next case or to Detective Report
+        function nextCaseOrReport() {
+            document.getElementById('modal-feedback').classList.add('hidden');
+            const cases = getCurrentCases();
+            
+            if (state.currentCaseIndex < cases.length - 1) {
+                state.currentCaseIndex++;
+                saveState();
+                renderCurrentCase();
+            } else {
+                goToScreen('report');
+            }
+        }
+
+        // Local Storage Utilities
+        function saveState() {
+            try {
+                localStorage.setItem('cyber_detective_state', JSON.stringify(state));
+            } catch (err) {
+                console.warn('LocalStorage not accessible', err);
+            }
+        }
+
+        function loadSavedState() {
+            try {
+                const saved = localStorage.getItem('cyber_detective_state');
+                if (saved) {
+                    state = JSON.parse(saved);
+                    
+                    // Show "Lanjutkan" button on home if state exists
+                    if (state.currentCaseIndex > 0 || Object.keys(state.answers).length > 0) {
+                        const btnResume = document.getElementById('btn-resume-home');
+                        if (btnResume) btnResume.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.warn('LocalStorage error', err);
+            }
+        }
+
+        function resumeProgress() {
+            const cases = getCurrentCases();
+            if (state.currentCaseIndex < cases.length) {
+                renderCurrentCase();
+                goToScreen('case');
+            } else {
+                goToScreen('report');
+            }
+        }
+
+        // Update Header Detective Badge
+        function updateHeaderBadge() {
+            const badge = document.getElementById('header-detective-badge');
+            const avatar = document.getElementById('header-avatar');
+            const nameEl = document.getElementById('header-detective-name');
+
+            if (state.selectedCharacter) {
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                avatar.innerText = state.selectedCharacter.charAt(0).toUpperCase();
+                nameEl.innerText = state.selectedCharacter.toUpperCase();
+            }
+        }
+
+        // Modal Guide Controls
+        function openGuideModal() {
+            document.getElementById('modal-guide').classList.remove('hidden');
+        }
+
+        function closeGuideModal() {
+            document.getElementById('modal-guide').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
